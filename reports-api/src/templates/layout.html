@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reporte Marcas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <style type="text/css">
+    .container {
+      max-width: 800px;
+      padding-top: 100px;
+    }
+    p {font-size: medium; text-align: left; display:flex; flex-direction: column}
+    h1 {text-align: center;}
+    h3 {text-align:center; color: rgb(19, 17, 17);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><b>Reporte de Marcas</b></h1>
+
+    <p style="text-align:center; font-size: small;">{{company_name}}
+    <br>
+    {{datetime_now}}
+    </p>
+    <br>
+   <p>Name: {{employee_first_name}} {{employee_last_name}}</p>
+   <p>Email: {{employee_email}}</p>
+
+   <br>
+   <br>
+   <h5 style="font-size: large;"><b>Marcas</b></h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Ubicación</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for marca in marcas %}
+      <tr>
+        <td>{{marca['employee'].first_name}}</td>
+        <td>{{marca['location'].name}}</td>
+        <td>{{marca['punch_date']}}</td>
+        <td>{{marca['punch_hour']}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  </div>
+</body>
+</html>

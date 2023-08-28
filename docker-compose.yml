@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  reports-api:
+    build:
+      context: ./reports-api/.
+      dockerfile: Dockerfile
+    image: reports-api:latest
+
+    env_file:
+      - ./reports-api/.env
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"   # number of files or file count
+        max-size: "10m" # file size
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'reports'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'passwordroot'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - mysql_vol:/var/lib/mysql
+volumes:
+  mysql_vol:
