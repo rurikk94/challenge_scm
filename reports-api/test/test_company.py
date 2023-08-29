@@ -116,10 +116,12 @@ def create_punches(db: Session, employees: List[EmployeeSchema], start_date: dat
         db.commit()
 
 db: Session = Sesion()
-companys = create_company(db, 3)
-employees = create_employees(db, companys, 25)
-locations = create_location(db, companys, 3)
-create_punches(db, employees)
+if (len(db.query(CompanySchema).all())<1):
+    print("Creando data dummy")
+    companys = create_company(db, 3)
+    employees = create_employees(db, companys, 25)
+    locations = create_location(db, companys, 3)
+    create_punches(db, employees)
 
 
 
