@@ -1,4 +1,5 @@
-from sqlalchemy import BLOB, Column, BigInteger, ForeignKey, String, DateTime, func
+from sqlalchemy import Column, BigInteger, ForeignKey, String, DateTime, func
+from sqlalchemy.dialects import mysql
 from sqlalchemy.orm import relationship
 from src.db import Base
 
@@ -60,5 +61,5 @@ class ReportFile(Base):
     id = Column(BigInteger, primary_key=True)
     report_id = Column(BigInteger, ForeignKey("report.id"), nullable=False)
     format = Column(String(5), nullable=False)
-    binary = Column(BLOB, nullable=True)
+    binary = Column(mysql.MEDIUMBLOB(2**24), nullable=True)
     size = Column(BigInteger, nullable=True, default=0)
