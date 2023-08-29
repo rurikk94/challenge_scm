@@ -25,7 +25,16 @@ LABEL maintainer="sergio.mora@scmlatam.com"
 COPY --from=build-stage /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+ENV DB_USER=$DB_USER
+ENV DB_PASS=$DB_PASS
+ENV DB_HOST=$DB_HOST
+ENV DB_NAME=$DB_NAME
+
 COPY ./src/ /opt/src
+COPY ./test/ /opt/test
+COPY ./alembic/ /opt/alembic
+COPY ./alembic.ini /opt/alembic.ini
+
 WORKDIR /opt/
 
 RUN apt-get update && apt-get install -y wkhtmltopdf
@@ -42,4 +51,4 @@ EXPOSE ${PORT}
 ENV PYTHONUNBUFFERED 1
 ENV SQLALCHEMY_WARN_20 1
 
-CMD uvicorn src.main:app --host=0.0.0.0 --port=${PORT}
+CMD alembic upgrade head && python ./test/test_company.py && uvicorn src.main:app --host=0.0.0.0 --port=${PORT}
