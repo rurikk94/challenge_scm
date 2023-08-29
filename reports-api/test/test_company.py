@@ -79,8 +79,8 @@ def create_location(db: Session, companys: List[CompanySchema], count: int = 3):
     return lst_location
 
 def create_punches(db: Session, employees: List[EmployeeSchema], start_date: date = None, end_date: date = None, cant_punches: int = 50):
-    start_dt = datetime.fromisoformat('2022-02-01T00:00:00').date() if not start_date else start_date
-    end_dt = datetime.fromisoformat('2023-02-19T00:00:00').date() if not end_date else end_date
+    start_dt = datetime.fromisoformat('2023-01-01T00:00:00').date() if not start_date else start_date
+    end_dt = date.today() if not end_date else end_date
 
 
     for e in employees:
