@@ -9,6 +9,10 @@ services:
       MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'passwordroot'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
     ports:
       - '3306:3306'
     expose:
@@ -18,7 +22,8 @@ services:
 
   reports-api:
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     build:
       context: ./reports-api/.
       dockerfile: Dockerfile
