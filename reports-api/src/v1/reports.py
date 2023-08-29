@@ -2,7 +2,8 @@ import asyncio
 import csv
 import datetime
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from fastapi.responses import StreamingResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, StreamingResponse
 from io import BytesIO
 import jinja2
 import pdfkit
@@ -15,7 +16,7 @@ from src.db.models import Employee as EmployeeSchema
 from src.config import settings
 from src.models import reports, employee, punchs, report_file
 from src.models.punchs import PunchModel
-from src.models.reports import ReportCreationRequestModel, ReportCreationResponseModel, ReportFileModel
+from src.models.reports import ReportCreationRequestModel, ReportCreationResponseModel, ReportFileModel, ReportCreationModel
 from src.v1 import deps
 
 reports_routes = APIRouter()
@@ -73,16 +74,18 @@ def create_csv(output_dict, csv_path, field_names):
         writer.writerows(output_dict)
 
 
-def create_html(output_text, html_path):
+async def create_html(output_text, html_path):
     """ crea un html """
+    await asyncio.sleep(0.1)
     html_file = open(html_path, 'wb')
     html_file.write(output_text.encode("UTF-8"))
     html_file.close()
 
-def html2pdf(html_path, pdf_path, config):
+async def html2pdf(html_path, pdf_path, config):
     """
     Convert html to pdf using pdfkit which is a wrapper of wkhtmltopdf
     """
+    await asyncio.sleep(0.1)
     options = {
         'page-size': 'Letter',
         'margin-top': '0.35in',
@@ -121,8 +124,6 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
     await reports.update(db, report.id, 10)
     await asyncio.sleep(0.1)
 
-    await asyncio.sleep(0.1)
-    BASE_PATH = Path(__file__).resolve().parent
     now = get_datetime()
     marcas = [ PunchModel.model_validate(marca) for marca in marcas_orm]
 
@@ -149,37 +150,25 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
         template_file=layout_name
     )
 
-    await asyncio.sleep(0.1)
     html_path = f'{settings.RESULT_REPORTS_FOLDER}/{now}.html'
-    create_html(output_text, html_path)
+    await create_html(output_text, html_path)
     await reports.update(db, report.id, 50)
 
-    await asyncio.sleep(0.1)
     pdf_path = f'{settings.RESULT_REPORTS_FOLDER}/{now}.pdf'
-    config_pdfkit = get_pdfkit_config()
-    html2pdf(html_path, pdf_path, config_pdfkit)
+    await html2pdf(html_path, pdf_path, get_pdfkit_config())
     await reports.update(db, report.id, 80)
 
-    await asyncio.sleep(0.1)
+    await report_file.create_file(db, report.id, "csv", await get_file(csv_path))
+    await report_file.create_file(db, report.id, "html", await get_file(html_path))
+    await report_file.create_file(db, report.id, "pdf", await get_file(pdf_path))
+
     await reports.update(db, report.id, 100, datetime.datetime.now(datetime.timezone.utc))
 
-    await asyncio.sleep(0.1)
-    with open(csv_path, 'rb') as file:
-        binary_data = file.read()
-    await report_file.create_file(db, report.id, "csv", binary_data)
-
-    await asyncio.sleep(0.1)
-    with open(html_path, 'rb') as file:
-        binary_data_html = file.read()
-    await report_file.create_file(db, report.id, "html", binary_data_html)
-
+async def get_file(pdf_path):
     await asyncio.sleep(0.1)
     with open(pdf_path, 'rb') as file:
-        binary_data_pdf = file.read()
-    await report_file.create_file(db, report.id, "pdf", binary_data_pdf)
-
-
-
+        data = file.read()
+    return data
 
 @reports_routes.get("/{report_id}", status_code=201)
 async def download_report(
@@ -198,7 +187,7 @@ async def download_report(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found report")
 
     if reporte.finish_at is None:
-        raise HTTPException(status_code=status.HTTP_425_TOO_EARLY, detail="Not report finished")
+        return JSONResponse(content=jsonable_encoder(ReportCreationModel.model_validate(reporte)), status_code=status.HTTP_425_TOO_EARLY)
 
     reporte_file = await report_file.get_by_id_format(db, report_id, format)
     if reporte_file is None:

@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 import datetime
 
 from sqlalchemy.orm import Session
@@ -22,6 +22,12 @@ class ReportCreationRequestModel(BaseModel):
 
 class ReportCreationResultModel(ReportCreationRequestModel):
     report_id: int
+    status: str
+
+class ReportCreationModel(ReportCreationRequestModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
     status: str
 
 class ResponseModel(BaseModel):
