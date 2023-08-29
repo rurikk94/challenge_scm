@@ -28,6 +28,16 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY ./src/ /opt/src
 WORKDIR /opt/
 
+RUN apt-get update && apt-get install -y wkhtmltopdf
+RUN wkhtmltopdf --version
+
+RUN groupadd -r my_grupo && useradd -r -g my_grupo my_user
+
+RUN chown -R my_user:my_grupo /opt/src/res/
+RUN chmod -R u+rwx /opt/src/res/
+
+USER my_user
+
 EXPOSE ${PORT}
 ENV PYTHONUNBUFFERED 1
 ENV SQLALCHEMY_WARN_20 1
