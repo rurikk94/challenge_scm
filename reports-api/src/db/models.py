@@ -27,6 +27,8 @@ class Location(Base):
     name = Column(String(250), nullable=False)
     address = Column(String(250), nullable=False)
     company_id = Column(BigInteger, ForeignKey("company.id"), nullable=False)
+    company = relationship("Company", backref="locations")
+
 
 class Punch(Base):
     __tablename__ = "punch"
