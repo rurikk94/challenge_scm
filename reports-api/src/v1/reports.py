@@ -38,6 +38,7 @@ async def create_report(
         employee_id=report_in.employee_id,
         start_date=report_in.start_date,
         end_date=report_in.end_date,
+        status='Generado'
     )
 
     background_tasks.add_task(creando_reporte, db, report, e, "layout.html")
@@ -54,10 +55,11 @@ async def create_report(
     }
 
 
-def render_template_to_html(data: dict, template_folder: str, template_file: str):
+async def render_template_to_html(data: dict, template_folder: str, template_file: str):
     """
     Render html page using jinja based on template_file
     """
+    await asyncio.sleep(0.1)
 
     template_loader = jinja2.FileSystemLoader(searchpath=template_folder)
     template_env = jinja2.Environment(loader=template_loader)
@@ -66,8 +68,9 @@ def render_template_to_html(data: dict, template_folder: str, template_file: str
     output_text = template.render(data)
     return output_text
 
-def create_csv(output_dict, csv_path, field_names):
+async def create_csv(output_dict, csv_path, field_names):
     """ Crea un csv """
+    await asyncio.sleep(0.1)
     with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames = field_names, quoting=csv.QUOTE_ALL)
         writer.writeheader()
@@ -120,10 +123,11 @@ def get_pdfkit_config():
 async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, layout_name: str):
     """ Crea un reporte en los formatos ``html``, ``csv``, ``pdf``"""
 
+    await reports.update(db, report.id, "En proceso")
+
     marcas_orm = punchs.get_by_filter(db, employee_ids=[report.employee_id],
                                       start_punch_date=report.start_date,
                                       end_punch_date=report.end_date)
-    await reports.update(db, report.id, 10)
     await asyncio.sleep(0.1)
 
     now = get_datetime()
@@ -131,11 +135,10 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
 
     csv_path = f'{settings.RESULT_REPORTS_FOLDER}/{now}.csv'
     field_names = ['id', 'employee_id', 'punch_date','punch_hour']
-    create_csv([marca.model_dump(include={f for f in field_names})
+    await create_csv([marca.model_dump(include={f for f in field_names})
                 for marca in marcas],
                 csv_path, field_names
                 )
-    await reports.update(db, report.id, 30)
 
     data = {
         'marcas': marcas,
@@ -146,7 +149,7 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
         'employee_email':employee.email,
 
     }
-    output_text = render_template_to_html(
+    output_text = await render_template_to_html(
         data=data,
         template_folder=settings.TEMPLATES_FOLDER,
         template_file=layout_name
@@ -154,17 +157,15 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
 
     html_path = f'{settings.RESULT_REPORTS_FOLDER}/{now}.html'
     await create_html(output_text, html_path)
-    await reports.update(db, report.id, 50)
 
     pdf_path = f'{settings.RESULT_REPORTS_FOLDER}/{now}.pdf'
     await html2pdf(html_path, pdf_path, get_pdfkit_config())
-    await reports.update(db, report.id, 80)
 
     await report_file.create_file(db, report.id, "csv", await get_file(csv_path))
     await report_file.create_file(db, report.id, "html", await get_file(html_path))
     await report_file.create_file(db, report.id, "pdf", await get_file(pdf_path))
 
-    await reports.update(db, report.id, 100, datetime.datetime.now(datetime.timezone.utc))
+    await reports.update(db, report.id, "Finalizado", datetime.datetime.now(datetime.timezone.utc))
 
 async def get_file(pdf_path):
     await asyncio.sleep(0.1)

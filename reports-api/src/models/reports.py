@@ -56,12 +56,12 @@ class Report():
 
 
     @classmethod
-    async def create(cls, db: Session, employee_id: int, start_date: datetime.date, end_date: datetime.date):
+    async def create(cls, db: Session, employee_id: int, start_date: datetime.date, end_date: datetime.date, status: str):
         reporte = ReportSchema(
             employee_id=employee_id,
             start_date=start_date,
             end_date=end_date,
-            status='0'
+            status=status
         )
 
         db.add(reporte)
