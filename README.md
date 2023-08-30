@@ -32,17 +32,6 @@ Indica el ambiente en que se ejecutará. Si se envía el valor `DEV`, al ejecuta
 
 Indica el puerto en que se ejecutará el servicio Reports-api.
 
-Ejemplo de .env
-
-```env
-DB_USER = "user"
-DB_PASS = "password"
-DB_NAME = "reports"
-DB_HOST = "mysql"
-ENV = "DEV"
-PORT = 8000
-```
-
 ## MYSQL
 
 [Referencia MYSQL IMAGES DOCKER](https://hub.docker.com/_/mysql)
@@ -63,4 +52,23 @@ Además es necesario alguno de los siguientes para establecer la contraseña de 
 MYSQL_ROOT_PASSWORD
 MYSQL_ALLOW_EMPTY_PASSWORD
 MYSQL_RANDOM_ROOT_PASSWORD
+```
+
+## Ejemplo de .env
+
+```env
+DB_USER = "user"
+DB_PASS = "password"
+DB_NAME = "reports"
+DB_HOST = "mysql"
+ENV = "DEV"
+PORT = 8000
+MYSQL_ROOT_PASSWORD = "string"
+```
+
+## Ejecutar Docker Compose
+
+```sh
+docker compose build
+docker compose up
 ```
