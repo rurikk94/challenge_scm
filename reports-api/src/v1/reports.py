@@ -120,7 +120,9 @@ def get_pdfkit_config():
 async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, layout_name: str):
     """ Crea un reporte en los formatos ``html``, ``csv``, ``pdf``"""
 
-    marcas_orm = punchs.get_by_employee(db, report.employee_id)
+    marcas_orm = punchs.get_by_filter(db, employee_ids=[report.employee_id],
+                                      start_punch_date=report.start_date,
+                                      end_punch_date=report.end_date)
     await reports.update(db, report.id, 10)
     await asyncio.sleep(0.1)
 

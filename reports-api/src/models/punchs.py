@@ -5,7 +5,7 @@ from src.models.location import LocationModel
 from src.models.employee import EmployeeModel
 from src.models.company import CompanyModel
 from sqlalchemy.orm import Session
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from src.db.models import Punch as PunchSchema
 
@@ -68,7 +68,7 @@ class Punchs():
         if start_punch_date:
             query = query.filter(PunchSchema.punch_time > start_punch_date)
         if end_punch_date:
-            query = query.filter(PunchSchema.punch_time < end_punch_date)
+            query = query.filter(PunchSchema.punch_time < end_punch_date + timedelta(days=1))
         return query.all()
 
 punchs = Punchs()
