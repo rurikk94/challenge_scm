@@ -23,6 +23,7 @@ Indica el nombre de la base de datos que se utilizará en MySQL
 **``DB_HOST``**
 
 Indica la dirección de la base de datos que se utilizará en el sistema.
+Si está utilizando el servicio de base de datos dentro de un contenedor, es necesario colocar el nombre del servicio como valor de esta variable de entorno para que el servicio de reports-api pueda conectarse correctamente.
 
 **``ENV``**
 
@@ -66,9 +67,17 @@ PORT = 8000
 MYSQL_ROOT_PASSWORD = "string"
 ```
 
-## Ejecutar Docker Compose
+## Construir la imagen de los servicios mediante Docker Compose
+
+Para construir el servicio se debe ejecutar un el siguiente comando.
+Este utilizará el archivo ``docker-compose.yml`` para construir las imagenes de los servicios según los dockerfiles indicados.
 
 ```sh
 docker compose build
+```
+
+Para crear y ejecutar los contenedores de un servicio se debe utilizar el siguiente comando. Tambien inciará los servicios vinculados.
+
+```sh
 docker compose up
 ```
