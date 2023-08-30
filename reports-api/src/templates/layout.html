@@ -30,17 +30,16 @@
   <div class="container">
     <h1><b>Reporte de Marcas</b></h1>
 
-    <p id="encabezado">{{company_name}}
-    <br>
-    {{datetime_now}}
+    <p id="encabezado">Compañia: {{company_name}}
+    <br>Reporte generado el {{datetime_now}}
     </p>
     <br>
-   <p>Name: {{employee_first_name}} {{employee_last_name}}</p>
-   <p>Email: {{employee_email}}</p>
+   <p>Nombre: {{employee_first_name}} {{employee_last_name}}</p>
+   <p>Correo: {{employee_email}}</p>
 
    <br>
    <br>
-   <h5 id="titulo-marcas"><b>Marcas</b></h5>
+   <h5 id="titulo-marcas"><b>Marcas desde {{report_start_date}} al {{report_end_date}}</b></h5>
 
   <table>
     <caption>Tabla de Marcas</caption>

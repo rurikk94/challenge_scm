@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 import datetime
 
 from sqlalchemy.orm import Session
@@ -19,6 +19,14 @@ class ReportCreationRequestModel(BaseModel):
     employee_id: int
     start_date: datetime.date
     end_date: datetime.date
+
+    @model_validator(mode='after')
+    def end_date_major_than_start(self) -> 'ReportCreationRequestModel':
+        start = self.start_date
+        end = self.end_date
+        if start > end:
+            raise ValueError('start date is major than end')
+        return self
 
 class ReportCreationResultModel(ReportCreationRequestModel):
     report_id: int

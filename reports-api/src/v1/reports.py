@@ -142,6 +142,8 @@ async def creando_reporte(db, report: ReportSchema, employee: EmployeeSchema, la
 
     data = {
         'marcas': marcas,
+        'report_start_date': report.start_date.strftime("%Y.%m.%d"),
+        'report_end_date': report.end_date.strftime("%Y.%m.%d"),
         'company_name': employee.company.name,
         'datetime_now': now,
         'employee_first_name':employee.first_name,
