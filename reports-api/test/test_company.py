@@ -82,6 +82,7 @@ def create_punches(db: Session, employees: List[EmployeeSchema], start_date: dat
     start_dt = datetime.fromisoformat('2023-01-01T00:00:00').date() if not start_date else start_date
     end_dt = date.today() if not end_date else end_date
 
+    punches = []
 
     for e in employees:
 
@@ -100,7 +101,6 @@ def create_punches(db: Session, employees: List[EmployeeSchema], start_date: dat
 
         marcas_dt.sort()
 
-        punches = []
 
         for marca_dt in marcas_dt:
             marca = PunchSchema(
@@ -112,16 +112,37 @@ def create_punches(db: Session, employees: List[EmployeeSchema], start_date: dat
 
             punches.append(marca)
 
-        db.add_all(punches)
-        db.commit()
+    db.add_all(punches)
+    db.commit()
+
+    return punches
 
 db: Session = Sesion()
-if (len(db.query(CompanySchema).all())<1):
+if (
+        os.environ.get('ENV', None) == 'DEV' and
+        len(db.query(CompanySchema).all())<1
+    ):
+    print("Ambiente ENV detectado")
     print("Creando data dummy")
-    companys = create_company(db, 3)
-    employees = create_employees(db, companys, 25)
-    locations = create_location(db, companys, 3)
-    create_punches(db, employees)
+
+    cant_comp = 3
+    print(f"Se crearán {cant_comp} compañias.")
+    companys = create_company(db, cant_comp)
+    print(f"Creadas {len(companys)} compañias")
+
+    cant_employees = 25
+    print(f"Se crearán {cant_employees} empleados por cada compañia.")
+    employees = create_employees(db, companys, cant_employees)
+    print(f"Creadas {len(employees)} empleados")
+
+    cant_locations = 3
+    print(f"Se crearán {cant_locations} locations por cada compañia.")
+    locations = create_location(db, companys, cant_locations)
+    print(f"Creadas {len(locations)} ubicaciones")
+
+    print("Se crearán 2 marcas de pruebas para cada empleado por cada dia en lo que va de este año.")
+    punches = create_punches(db, employees)
+    print(f"Creadas {len(punches)} marcas de prueba")
 
 
 

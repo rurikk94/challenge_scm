@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <title>Reporte Marcas</title>
   <meta charset="UTF-8">
@@ -17,13 +17,20 @@
       border: 1px solid black;
       border-collapse: collapse;
     }
+    #encabezado{
+      text-align:center;
+      font-size: small;
+    }
+    #titulo-marcas{
+      font-size: large;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1><b>Reporte de Marcas</b></h1>
 
-    <p style="text-align:center; font-size: small;">{{company_name}}
+    <p id="encabezado">{{company_name}}
     <br>
     {{datetime_now}}
     </p>
@@ -33,9 +40,10 @@
 
    <br>
    <br>
-   <h5 style="font-size: large;"><b>Marcas</b></h5>
+   <h5 id="titulo-marcas"><b>Marcas</b></h5>
 
   <table>
+    <caption>Tabla de Marcas</caption>
     <thead>
       <tr>
         <th>Nombre</th>

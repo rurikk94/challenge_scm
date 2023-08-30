@@ -40,11 +40,6 @@ def get_url():
     host     = os.environ['DB_HOST']
     database = os.environ['DB_NAME']
 
-    # user     = "user"
-    # password = "password"
-    # host     = "127.0.0.1"
-    # database = "reports"
-
     return f"mysql+pymysql://{user}:{password}@{host}/{database}"
 
 def run_migrations_offline() -> None:
