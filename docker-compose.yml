@@ -13,12 +13,8 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 5s
       retries: 5
-    ports:
-      - '3306:3306'
     expose:
       - '3306'
-    # volumes:
-    #   - mysql_vol:/var/lib/mysql
 
   reports-api:
     depends_on:
@@ -38,11 +34,3 @@ services:
     ports:
       - ${PORT}:${PORT}
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"   # number of files or file count
-        max-size: "10m" # file size
-
-# volumes:
-#   mysql_vol:
