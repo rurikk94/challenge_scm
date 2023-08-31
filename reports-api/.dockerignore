@@ -1,0 +1,7 @@
+*
+
+!/alembic/**
+!/src/**
+!/test/**
+!/alembic.ini
+!/requirements.txt

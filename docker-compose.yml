@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+    expose:
+      - '3306'
+
+  reports-api:
+    depends_on:
+      mysql:
+        condition: service_healthy
+    build:
+      context: ./reports-api/.
+      dockerfile: Dockerfile
+    image: reports-api:latest
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      PORT: ${PORT}
+      ENV: ${ENV}
+    ports:
+      - ${PORT}:${PORT}
+    restart: unless-stopped

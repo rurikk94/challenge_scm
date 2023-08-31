@@ -1,0 +1,13 @@
+Generic single-database configuration.
+
+```powershell
+$env:DB_USER = "user"
+$env:DB_PASS = "password"
+$env:DB_HOST = "localhost"
+$env:DB_NAME = "reports"
+```
+
+```sh
+alembic revision --autogenerate -m "Added user table"
+alembic upgrade head
+```

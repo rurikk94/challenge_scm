@@ -1,0 +1,15 @@
+fastapi==0.101.1
+SQLAlchemy==2.0.20
+pymysql==1.1.0
+pydantic==2.3.0
+pydantic-settings==2.0.3
+uvicorn==0.23.2
+cryptography==41.0.3
+alembic==1.11.3
+python-dotenv
+Jinja2==3.1.2
+pdfkit==1.0.0
+
+Faker==19.3.1
+pytest==7.4.0
+pytest-dotenv==0.5.2
